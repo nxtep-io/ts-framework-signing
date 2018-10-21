@@ -1,1 +1,1 @@
-export { default as Signing } from './Signing';
+export { default as Signing, SigningMiddleware, SecretMiddleware } from './Signing';
