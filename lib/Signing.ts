@@ -10,7 +10,7 @@ export interface SigningOptions {
   /**
    * An async function to get the secret to sign this request with.
    */
-  secret: SecretMiddleware;
+  secret: string | SecretMiddleware;
   /**
    * The signing middleware logger instance, for verbose and debugging.
    */
@@ -39,6 +39,31 @@ export default class Signing {
   }
 
   /**
+   * An express middleware for handling signed requests.
+   * 
+   * @param {SigningOptions & {secret: string}} options The signing middleware options
+   * @param {string|SecretMiddleware} options.secret A constant string or an async function to get the secret from request
+   */
+  public static middleware(options: SigningOptions): SigningMiddleware {
+    // Return the built express middleware
+    return new Signing(options).build();
+  }
+
+  /**
+   * Gets the secret for signing based on request and response.
+   */
+  protected async secret(req: BaseRequest, res: BaseResponse): Promise<string> {
+    let secret = this.options.secret as SecretMiddleware;
+
+    // Ensure secret is a promise to a string
+    if (typeof this.options.secret === typeof 'string') {
+      secret = async () => (this.options.secret as string);
+    }
+
+    return secret(req, res);
+  }
+
+  /**
    * Builds the express middleware for signing the requests. 
    * This is an internal method, should not be called directly.
    */
@@ -53,7 +78,8 @@ export default class Signing {
       }
 
       // Generate the expected request signature
-      const computedSignature = generateSignaturePayload(req, await this.options.secret(req, res), this.options.signedBodyMethods);
+      const secret = await this.secret(req, res);
+      const computedSignature = generateSignaturePayload(req, secret, this.options.signedBodyMethods);
 
       // Validate the request signature
       if (signature && signature === computedSignature) {
@@ -63,23 +89,5 @@ export default class Signing {
       // Incorrect request signature
       throw new HttpError("Invalid request signature: incorrect format", HttpCode.Client.BAD_REQUEST);
     }
-  }
-
-  /**
-   * An express middleware for handling signed requests.
-   * 
-   * @param options The signing middleware options
-   * @param options.secret A constant string or an async function to get the secret from request
-   */
-  public static middleware(options: SigningOptions & { secret: string }): SigningMiddleware {
-    let secret = options.secret as SecretMiddleware;
-
-    // Ensure secret is a promise to a string
-    if (typeof options.secret === typeof 'string') {
-      secret = async () => (options.secret as string);
-    }
-
-    // Return the built express middleware
-    return new Signing({ ...options, secret }).build();
   }
 }

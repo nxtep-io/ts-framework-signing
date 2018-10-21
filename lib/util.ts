@@ -31,7 +31,7 @@ export const parseHeaders = (req: BaseRequest, timeout: number): { timestamp?: n
  * @param req The base request
  * @param secret The secret to be used in the encryption
  */
-export const generateSignaturePayload = (req: BaseRequest, secret: string, signedBodyMethods: ('POST' | 'PUT')[] = []) => {
+export const generateSignaturePayload = (req: BaseRequest, secret: string, signedBodyMethods: ('POST' | 'PUT')[]) => {
   const items = [req.method, req.url, req.headers["x-request-timestamp"]];
   const shouldVerifyBody = signedBodyMethods.indexOf(req.method.toUpperCase() as any) >= 0;
 
@@ -41,7 +41,7 @@ export const generateSignaturePayload = (req: BaseRequest, secret: string, signe
   }
 
   if (!secret) {
-    throw new Error("Invalid computed signature secret");
+    throw new Error("Invalid secret for computing request signature");
   }
 
   return crypto.createHmac("sha256", secret).update(items.join(",")).digest("hex");

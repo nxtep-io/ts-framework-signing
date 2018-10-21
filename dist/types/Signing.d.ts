@@ -6,7 +6,7 @@ export interface SigningOptions {
     /**
      * An async function to get the secret to sign this request with.
      */
-    secret: SecretMiddleware;
+    secret: string | SecretMiddleware;
     /**
      * The signing middleware logger instance, for verbose and debugging.
      */
@@ -25,17 +25,19 @@ export default class Signing {
     protected readonly options: SigningOptions;
     protected constructor(options: SigningOptions);
     /**
+     * An express middleware for handling signed requests.
+     *
+     * @param {SigningOptions & {secret: string}} options The signing middleware options
+     * @param {string|SecretMiddleware} options.secret A constant string or an async function to get the secret from request
+     */
+    static middleware(options: SigningOptions): SigningMiddleware;
+    /**
+     * Gets the secret for signing based on request and response.
+     */
+    protected secret(req: BaseRequest, res: BaseResponse): Promise<string>;
+    /**
      * Builds the express middleware for signing the requests.
      * This is an internal method, should not be called directly.
      */
     protected build(): SigningMiddleware;
-    /**
-     * An express middleware for handling signed requests.
-     *
-     * @param options The signing middleware options
-     * @param options.secret A constant string or an async function to get the secret from request
-     */
-    static middleware(options: SigningOptions & {
-        secret: string;
-    }): SigningMiddleware;
 }

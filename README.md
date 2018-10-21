@@ -70,6 +70,18 @@ app.listen(3000, () => console.log('Server listening on port: 3000'));
 ```
 <br />
 
+## Options
+
+- **options.secret (required)**: A constant string or an async function to get the secret to sign this request with.
+
+- **options.logger**: The signing middleware logger instance, for verbose and debugging.
+
+- **options.maxTimeout**: The max timeout between the signed timestamp and the time of verification, in ms. Defaults to `30000 ms`.
+
+- **signedBodyMethods**: The list of HTTP Methods with full body signing verification. Defaults to `['POST', 'PUT']`.
+
+<br />
+
 ## License
 
 The project is licensed under the [MIT License](./LICENSE.md).

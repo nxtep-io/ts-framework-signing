@@ -14,4 +14,4 @@ export declare const parseHeaders: (req: BaseRequest, timeout: number) => {
  * @param req The base request
  * @param secret The secret to be used in the encryption
  */
-export declare const generateSignaturePayload: (req: BaseRequest, secret: string, signedBodyMethods?: ("POST" | "PUT")[]) => string;
+export declare const generateSignaturePayload: (req: BaseRequest, secret: string, signedBodyMethods: ("POST" | "PUT")[]) => string;
