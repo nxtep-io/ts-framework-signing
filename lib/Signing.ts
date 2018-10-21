@@ -16,7 +16,7 @@ export default class Signing {
 
     // Ensure secret is a promise to a string
     if (typeof options.secret === typeof 'string') {
-      secret = Promise.resolve(options.secret) as any;
+      secret = async () => (options.secret as string);
     }
 
     // Return the express interface middleware

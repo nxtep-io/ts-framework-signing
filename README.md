@@ -34,12 +34,18 @@ class MyServer extends Server {
     })
   }
 
-  public register() {
+  public async onMount() {
     // Initialize the request signing middleware
-    this.app.use(Signing.middleware());
+    this.app.use(Signing.middleware({
+      /* 
+        You can pass a constant secret string for signing 
+        or a function returning a promised string 
+      */
+      secret: async (req) => req.user.secret,
+    }));
 
     // Continue with the router initialization
-    return super.register();
+    return super.onMount();
   }
 }
 ```
@@ -55,7 +61,10 @@ const { Signing } = require('ts-framework-signing');
 
 const app = express();
 
-app.use(Signing.middleware());
+app.use(Signing.middleware({
+  /* The secret can also be a constant string */
+  secret: 'test'
+}));
 
 app.listen(3000, () => console.log('Server listening on port: 3000'));
 ```
