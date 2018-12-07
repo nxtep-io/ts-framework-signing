@@ -1,5 +1,5 @@
 import { BaseRequest, BaseResponse, HttpCode, HttpError } from "ts-framework";
-import { Logger } from "ts-framework-common";
+import { Logger, LoggerInstance } from "ts-framework-common";
 import { generateSignaturePayload, parseHeaders } from "./util";
 
 export type SigningMiddleware = (req: BaseRequest, res: BaseResponse, next: Function) => Promise<void>;
@@ -14,19 +14,19 @@ export interface SigningOptions {
   /**
    * The signing middleware logger instance, for verbose and debugging.
    */
-  logger?: Logger;
+  logger?: LoggerInstance;
   /**
    * The max timeout between the signed timestamp and the time of verification, in ms. Defaults to `30000 ms`.
    */
   maxTimeout?: number;
   /**
-   * The list of HTTP Methods with full body signing verification. Defaults to `['POST', 'PUT']`.
+   * The list of HTTP Methods with full body signing verification. Works with `['POST', 'PUT']`, defaults to both.
    */
   signedBodyMethods?: ('POST' | 'PUT')[]
 }
 
 export default class Signing {
-  protected readonly logger: Logger;
+  protected readonly logger: LoggerInstance;
   protected readonly options: SigningOptions;
 
   protected constructor(options: SigningOptions) {
