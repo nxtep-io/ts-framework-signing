@@ -1,9 +1,12 @@
-import { Signing } from "../lib";
 import * as crypto from 'crypto';
 import * as request from 'supertest';
-import Server, { Get, Controller, Post } from 'ts-framework';
+import Server, { Controller, Post } from 'ts-framework';
+import { Logger } from "ts-framework-common";
+import { Signing } from "../lib";
 
 describe('lib.Server', () => {
+  Logger.initialize();
+
   @Controller()
   class TestController {
     @Post('/', [Signing.middleware({ secret: 'test' })])
